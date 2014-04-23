@@ -1,8 +1,8 @@
 {
   "name": "emberbase",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A cheap firebase clone",
-  "main": "emberbase.js",
+  "main": "lib/application.js",
   "scripts": {
     "test": "make test"
   },
