@@ -1,14 +1,36 @@
-<script src="http://localhost:8000/emberbase.min.js"></script>
-<script>
-var eb = new Emberbase ('http://localhost:8000/client');
-/*
-eb.set ({ name: "Alex Wolfe" });
-eb.on ("value", function (data) {
-  console.log (data);
-});
-*/
-eb.push ({name: 'Alex', text: 'Hi !'});
-eb.on ('child_added', function (data) {
-  console.log (data.val);
-});
-</script>
+<!--
+This script's inspiration comes from the Firebase official tutorial,
+available at https://www.firebase.com/tutorial
+It is only intended as a starting point to understand how Emberbase works.
+-->
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <script src="http://localhost:8000/emberbase.min.js"></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+  </head>
+  <body>
+    <div id='messages'></div>
+    <input type='text' id='name' placeholder='Name'/>
+    <input type='text' id='message' placeholder='Message'/>
+
+    <script>
+      var chatDB = new Emberbase('http://localhost:8000/chat');
+      $('#message').keypress(function (e) {
+        if (e.keyCode == 13) {
+          var name = $('#name').val();
+          var text = $('#message').val();
+          chatDB.push({name: name, text: text});
+          $('#message').val('');
+        }
+      });
+      chatDB.on('child_added', function(snapshot) {
+        var message = snapshot.val;
+        displayChatMessage(message.name, message.text);
+      });
+      function displayChatMessage(name, text) {
+        $('#messages').append('<div><em>'+name+'</em>: '+text+'</div>');
+      };
+    </script>
+  </body>
+</html>
