@@ -1,8 +1,14 @@
 <script src="http://localhost:8000/emberbase.min.js"></script>
 <script>
 var eb = new Emberbase ('http://localhost:8000/client');
+/*
 eb.set ({ name: "Alex Wolfe" });
 eb.on ("value", function (data) {
-  alert ("My name is " + data.name);
+  console.log (data);
+});
+*/
+eb.push ({name: 'Alex', text: 'Hi !'});
+eb.on ('child_added', function (data) {
+  console.log (data.val);
 });
 </script>
