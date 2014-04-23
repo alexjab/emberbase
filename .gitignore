@@ -1,0 +1,4 @@
+*.swp
+node_modules/
+lib/static/emberbase.js
+lib/static/emberbase.min.js

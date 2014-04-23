@@ -1,7 +1,7 @@
 {
   "name": "emberbase",
-  "version": "0.0.1",
-  "description": "a cheap firebase clone",
+  "version": "0.0.2",
+  "description": "A cheap firebase clone",
   "main": "emberbase.js",
   "scripts": {
     "test": "make test"
@@ -11,5 +11,10 @@
   "dependencies": {
     "express": "~4.0.0",
     "socket.io": "~0.9.16"
+  },
+  "devDependencies": {
+    "gulp": "~3.6.1",
+    "gulp-concat": "~2.2.0",
+    "gulp-uglify": "~0.2.1"
   }
 }
