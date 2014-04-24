@@ -23,8 +23,6 @@ var emberbase = require ('emberbase');
 
 var app = new emberbase ();
 
-
-app.store ();
 app.route ('/my_application');
 app.listen (8000);
 ```
@@ -56,12 +54,7 @@ eb.on ('value', function(data) {
 
 Specify a new database name, usually based on your application. Every application that will connect to this route will share the same database.
 
-The url that must be called from the client-side is `http://host:port/<route>` (see example above).
-
-####Emberbase.store
-`Emberbase.store () [Mandatory]`
-
-A storage variable for the data. Currently, this option is the only storage available but I plan to add redis ASAP. Be careful since stoping your Emberbase server will result in a loss of all the data.
+The URL that must be called from the client-side is `http://host:port/<route>` (see example above).
 
 ####Emberbase.listen
 `Emberbase.listen (port [Integer]) [Mandatory]`
@@ -72,7 +65,7 @@ Tells your Emberbase server to listen.
 ####Emberbase
 `new Emberbase (url [String][Mandatory]) [Mandatory]`
 
-Construct the Emberbase client object with the URL of your application as parameter.
+Construct the Emberbase client object with the URL of your application as parameter. The URL must the form of `http://host:port/<route>`, where `route` is a route you created with your server (see example above).
 
 ####Emberbase.set
 `Emberbase.set (data [JSON][Mandatory])`
