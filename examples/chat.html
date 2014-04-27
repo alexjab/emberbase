@@ -25,7 +25,6 @@ It is only intended as a starting point to understand how Emberbase works.
         }
       });
       chatDB.on('child_added', function(snapshot) {
-      console.log (snapshot);
         var message = snapshot.val;
         displayChatMessage(message.name, message.text);
       });
