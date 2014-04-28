@@ -23,7 +23,8 @@ var emberbase = require ('emberbase');
 
 var app = new emberbase ();
 
-app.route ('/my_application');
+app.route ('my_application');
+app.interface ('my_application');
 app.listen (8000);
 ```
 
@@ -32,7 +33,7 @@ Emberbase currently only supports in-browser javascript:
 
 `index.html`:
 ```
-<script src="http://localhost:8000/emberbase.min.js"></script>
+<script src="http://localhost:8000/static/js/emberbase.min.js"></script>
 <script>
 var eb = new Emberbase ('http://localhost:8000/my_application');
 
@@ -54,7 +55,14 @@ eb.on ('value', function(data) {
 
 Specify a new database name, usually based on your application. Every application that will connect to this route will share the same database.
 
+WARNING: Routes must start without a `/`.
+
 The URL that must be called from the client-side is `http://host:port/<route>` (see example above).
+
+####Emberbase.interface
+`Emberbase.interface (route [String][Mandatory]) [Optional]`
+
+Create a web interface to visualize your data. The URL to access the interface for a specific route is `http://host:port/<route>` (the same as the emberbase client URL).
 
 ####Emberbase.listen
 `Emberbase.listen (port [Integer]) [Mandatory]`

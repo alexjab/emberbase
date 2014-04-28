@@ -10,14 +10,14 @@ var paths = {
 gulp.task('concat', function() {
   return gulp.src (paths.scripts)
   .pipe (concat ('emberbase.js'))
-  .pipe (gulp.dest ('lib/static'));
+  .pipe (gulp.dest ('lib/static/js'));
 });
 
 gulp.task('concat_uglify', function() {
   return gulp.src (paths.scripts)
   .pipe (uglify ())
   .pipe (concat ('emberbase.min.js'))
-  .pipe (gulp.dest ('lib/static'));
+  .pipe (gulp.dest ('lib/static/js'));
 });
 
 gulp.task ('default', ['concat', 'concat_uglify']);

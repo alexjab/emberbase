@@ -1,6 +1,6 @@
 {
   "name": "emberbase",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "A cheap firebase clone",
   "main": "lib/application.js",
   "scripts": {
@@ -13,7 +13,8 @@
     "socket.io": "~0.9.16",
     "redis": "~0.10.1",
     "levelup": "~0.18.2",
-    "leveldown": "~0.10.2"
+    "leveldown": "~0.10.2",
+    "ejs": "~1.0.0"
   },
   "devDependencies": {
     "gulp": "~3.6.1",
