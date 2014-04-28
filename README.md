@@ -55,7 +55,7 @@ eb.on ('value', function(data) {
 
 Specify a new database name, usually based on your application. Every application that will connect to this route will share the same database.
 
-WARNING: Routes must start without a `/`.
+WARNING: Routes must start **without** a `/`.
 
 The URL that must be called from the client-side is `http://host:port/<route>` (see example above).
 
