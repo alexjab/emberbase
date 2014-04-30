@@ -4,7 +4,7 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 
 var paths = {
-  scripts: ['lib/static/socket.io.js', 'lib/static/eb_script.js']
+  scripts: ['lib/static/socket.io.js', 'lib/static/emberbase_client.js']
 };
 
 gulp.task('concat', function() {
