@@ -33,7 +33,7 @@ Emberbase currently only supports in-browser javascript:
 
 `index.html`:
 ```
-<script src="http://localhost:8000/static/js/emberbase.min.js"></script>
+<script src="http://localhost:8000/emberbase.min.js"></script>
 <script>
 var eb = new Emberbase ('http://localhost:8000/my_application');
 
