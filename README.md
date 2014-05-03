@@ -15,7 +15,7 @@ npm install emberbase
 
 ##Use
 ###Server
-To create a Emberbase server, you need to create a server file and create your app:
+To create an Emberbase server, you need to create a server file and create your app:
 
 `server.js`:
 ```
