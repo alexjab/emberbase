@@ -1,5 +1,6 @@
 emberbase
 =========
+[![NPM version](https://badge.fury.io/js/emberbase.svg)](http://badge.fury.io/js/emberbase)
 
 A *cheap* Firebase clone.
 
