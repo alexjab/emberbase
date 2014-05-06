@@ -21,7 +21,7 @@ var number = function (num) {
 };
 
 program
-  .version ('0.3.4')
+  .version ('0.3.6')
   .usage ('[options]')
   .option ('-t, --tldr', 'TL;DR (you can ignore everything that comes after)', bool)
   .option ('-r, --route [route]', 'add a route to your base', collect, [])
