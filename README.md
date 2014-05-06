@@ -1,10 +1,10 @@
-emberbase
+![emberbase](http://i.imgur.com/0G5qLcW.png) emberbase
 =========
 [![NPM version](https://badge.fury.io/js/emberbase.svg)](http://badge.fury.io/js/emberbase)
 
 A *cheap* Firebase clone.
 
-Emberbase is a self-hosted Firebase clone. It is currently in an early development stage.
+Emberbase is a self-hosted Firebase clone. It is currently in an early development stage and unexpected results might happen.
 
 License: MIT
 
@@ -14,19 +14,52 @@ Emberbase runs on Node.js; to start using it, just run:
 npm install emberbase
 ```
 
+Or you can install it globally to access its command-line features (see below):
+
+```
+npm install emberbase -g
+```
+
 ##Use
+
 ###Server
 To create an Emberbase server, you need to create a server file and create your app:
 
-`server.js`:
+####1st method : TL;DR
 ```
-var emberbase = require ('emberbase');
+emberbase -t
+```
+If this does not work for you, please refer to the second or third method.
 
-var app = new emberbase ();
+#### 2nd method : by hand
 
-app.route ('my_application');
-app.interface ('my_application');
-app.listen (8000);
+Create a file `emberbase_server.js`:
+```
+var emberbase = require('emberbase');
+
+var app = new emberbase();
+
+app.route('my_application');
+app.interface('my_application');
+app.listen(8000);
+```
+
+#### 3rd method : with the CLI
+
+You can install Emberbase globally to access its command line interface to generate server files automagically :
+
+```
+npm install emberbase -g
+```
+
+To generate a file similar to the first example, just run:
+```
+emberbase -r my_application -a
+```
+
+To get help with the CLI, just run:
+```
+emberbase --help
 ```
 
 ###Client
@@ -106,4 +139,27 @@ This event is fired when data is appended to a list using the `push` command. It
 ###Testing
 Tests are on their way.
 
-License: MIT
+### License
+MIT
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Alexandre Jablon <alex@jablon.me>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
