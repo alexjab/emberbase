@@ -29,7 +29,7 @@ To create an Emberbase server, you need to create a server file and create your 
 ```
 emberbase -t
 ```
-If this does not work for you, please refer to the second or third method.
+Will create a file `emberbase_server.js`. If this method does not work for you, please refer to the second or third method.
 
 #### 2nd method : by hand
 

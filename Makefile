@@ -2,9 +2,9 @@ build:
 	gulp
 
 test:
-	mocha -R Spec
+	export NODE_ENV=test && mocha -R Spec
 
 install:
 	npm install mocha -g;
 
-.PHONY: build test
+.PHONY: build test install
