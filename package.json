@@ -1,6 +1,6 @@
 {
   "name": "emberbase",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A cheap firebase clone",
   "author": "alex@jablon.me",
   "license": "MIT",

@@ -8,16 +8,8 @@ Emberbase is a self-hosted Firebase clone. It is currently in an early developme
 
 License: MIT
 
-##Warning: the following README refers to version 0.3.8 (the one on npm), but the up-to-date code (on github) drops support for all the `require()`d features in favor of a global program with a web interface.
-
 ##Installation
-Emberbase runs on Node.js; to start using it, just run:
-```
-npm install emberbase
-```
-
-Or you can install it globally to access its command-line features (see below):
-
+Emberbase runs on Node.js; to install it globally, just run:
 ```
 npm install emberbase -g
 ```
@@ -25,87 +17,23 @@ npm install emberbase -g
 ##Use
 
 ###Server
-To create an Emberbase server, you need to create a server file and create your app:
-
-####1st method : TL;DR
+To start an Emberbase server, just do:
 ```
-emberbase -t
-```
-Will create a file `emberbase_server.js`. If this method does not work for you, please refer to the second or third method.
-
-#### 2nd method : by hand
-
-Create a file `emberbase_server.js`:
-```
-var emberbase = require('emberbase');
-
-var app = new emberbase();
-
-app.route('my_application');
-app.interface('my_application');
-app.listen(8000);
+emberbase
 ```
 
-#### 3rd method : with the CLI
-
-You can install Emberbase globally to access its command line interface to generate server files automagically :
-
-```
-npm install emberbase -g
-```
-
-To generate a file similar to the first example, just run:
-```
-emberbase -r my_application -a
-```
-
-To get help with the CLI, just run:
+If you need help with the server, write:
 ```
 emberbase --help
 ```
 
 ###Client
-Emberbase currently only supports in-browser javascript:
 
-`index.html`:
+The Emberbase client is a browser javascript library. It is bundled with the server and you just need to add this to your code:
 ```
-<script src="http://localhost:8000/emberbase.min.js"></script>
-<script>
-var eb = new Emberbase ('http://localhost:8000/my_application');
-
-eb.set ({name: 'Alex Terieur'});
-
-eb.on ('value', function(data) {
-  if (data.val) {
-    console.log ('My name is ' + data.val.name);
-  }
-});
-</script>
+<script src="/emberbase.min.js"></script>
 ```
 
-##Documentation
-###Server methods
-
-####Emberbase.route
-`Emberbase.route (route [String][Mandatory]) [Mandatory]`
-
-Specify a new database name, usually based on your application. Every application that will connect to this route will share the same database.
-
-WARNING: Routes must start **without** a `/`.
-
-The URL that must be called from the client-side is `http://host:port/<route>` (see example above).
-
-####Emberbase.interface
-`Emberbase.interface (route [String][Mandatory]) [Optional]`
-
-Create a web interface to visualize your data. The URL to access the interface for a specific route is `http://host:port/<route>` (the same as the emberbase client URL).
-
-####Emberbase.listen
-`Emberbase.listen (port [Integer]) [Mandatory]`
-
-Tells your Emberbase server to listen.
-
-###Client methods
 ####Emberbase
 `new Emberbase (url [String][Mandatory]) [Mandatory]`
 
