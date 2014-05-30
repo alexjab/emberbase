@@ -4,20 +4,20 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 
 var paths = {
-  scripts: ['lib/client/socket.io.js', 'lib/client/emberbase_client.js']
+  scripts: ['bin/client/socket.io.js', 'bin/client/emberbase_client.js']
 };
 
 gulp.task('concat', function() {
   return gulp.src (paths.scripts)
   .pipe (concat ('emberbase.js'))
-  .pipe (gulp.dest ('lib/client/dist'));
+  .pipe (gulp.dest ('bin/client/dist'));
 });
 
 gulp.task('concat_uglify', function() {
   return gulp.src (paths.scripts)
   .pipe (uglify ())
   .pipe (concat ('emberbase.min.js'))
-  .pipe (gulp.dest ('lib/client/dist'));
+  .pipe (gulp.dest ('bin/client/dist'));
 });
 
 gulp.task ('default', ['concat', 'concat_uglify']);

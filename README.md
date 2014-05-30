@@ -8,6 +8,8 @@ Emberbase is a self-hosted Firebase clone. It is currently in an early developme
 
 License: MIT
 
+##Warning: the following README refers to version 0.3.8 (the one on npm), but the up-to-date code (on github) drops support for all the `require()`d features in favor of a global program with a web interface.
+
 ##Installation
 Emberbase runs on Node.js; to start using it, just run:
 ```

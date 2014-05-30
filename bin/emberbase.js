@@ -1,120 +1,70 @@
 #!/usr/bin/env node
 
+var http = require ('http');
 var fs = require ('fs');
-var program = require ('commander');
-var prompt = require ('prompt');
-prompt.message = '';
-prompt.delimiter = '';
-prompt.colors = false;
 
-var collect = function (val, memo) {
-  memo.push (val);
-  return memo;
-};
+var express = require ('express');
+var bodyParser = require ('body-parser');
+var cookieParser = require ('cookie-parser');
+var session = require ('cookie-session');
 
-var bool = function (val, memo) {
-  return true;
-};
+var Emberbase = require ('../lib/application');
+var routes = require ('./routes.js');
 
-var number = function (num) {
-  return parseInt (num);
-};
+var conf = {};
+try {
+  conf = fs.readFileSync ('./emberbase_conf.json');
+  conf = JSON.parse (conf);
+  conf = {
+    username: conf.username||'admin',
+    password: conf.password||'admin',
+    port: conf.port||8000
+  };
+} catch (e) {
+  console.log ('No configuration file found, creating emberbase_conf.json');
+  conf = {
+    username: 'admin',
+    password: 'admin',
+    port: 8000
+  };
+} finally {
+  fs.writeFileSync ('./emberbase_conf.json', JSON.stringify (conf, null, 2));
+  console.log ('Configuration loaded');
+}
 
-program
-  .version ('0.3.6')
-  .usage ('[options]')
-  .option ('-t, --tldr', 'TL;DR (you can ignore everything that comes after)', bool)
-  .option ('-r, --route [route]', 'add a route to your base', collect, [])
-  .option ('-i, --interface [route]', 'setup a web interface for the specified route', collect, [])
-  .option ('-a, --all-routes', 'setup a web interface for all the routes', bool)
-  .option ('-p, --port [number]', 'specify the port number to listen to', number, 8000);
+var app = new express ();
+var server = http.createServer (app);
+var emberbase = new Emberbase (server);
 
-program.on ('--help', function () {
-  console.log ('  Examples:');
-  console.log ('');
-  console.log ('    TL;DR:');
-  console.log ('      $ emberbase -t');
-  console.log ('');
-  console.log ('    Create a database for your application my_app:');
-  console.log ('      $ emberbase -r my_app');
-  console.log ('');
-  console.log ('    The same but with a web interface to view your data:');
-  console.log ('      $ emberbase -r my_app -i my_app');
-  console.log ('');
-  console.log ('    The same but with several routes:');
-  console.log ('      $ emberbase -r my_app1 -r my_app2 -r my_app3 -i my_app1 -i my_app2 -i my_app3');
-  console.log ('');
-  console.log ('    The same but shorter:');
-  console.log ('      $ emberbase -r my_app1 -r my_app2 -r my_app3 -a');
-  console.log ('');
-  console.log ('    With a different port:');
-  console.log ('      $ emberbase -r my_app1 -p 3000');
+app.use (bodyParser ());
+app.use (cookieParser ());
+app.use (session ({secret: '#E8=}n}^<:I3iFx:~.:FgoB#hXmc.KZ#F!zF$(PULD(-+.Xk2?0~.H_z-xn{!23x'}));
+app.use ('/static/css', express.static (__dirname + '/static/css'));
+app.use ('/static/fonts', express.static (__dirname + '/static/fonts'));
+app.use ('/static/img', express.static (__dirname + '/static/img'));
+app.use ('/static/js', express.static (__dirname + '/static/js'));
+app.set ('view engine', 'ejs');
+app.set ('views', __dirname + '/static/views');
+app.get ('/emberbase.min.js', routes.clientMin);
+app.get ('/', function (req, res) {
+  routes.index (req, res, emberbase, conf);
+});
+app.get ('/signin', function (req, res) {
+  routes.signin (req, res, emberbase, conf);
+});
+app.post ('/signin', function (req, res) {
+  routes.signin (req, res, emberbase, conf);
+});
+app.get ('/signout', function (req, res) {
+  routes.signout (req, res, emberbase, conf);
+});
+app.post ('/api/addRoute', function (req, res) {
+  routes.addRoute (req, res, emberbase, conf);
+});
+app.get ('/:route', function (req, res) {
+  routes.dashboard (req, res, emberbase, conf);
 });
 
-program.parse (process.argv);
-
-var file = "";
-if (program.tldr) {
-  file = "var emberbase = require('emberbase');\n";
-  file += "\n";
-  file += "var app = new emberbase();\n";
-  file += "\n";
-  file += "app.route('my_app');\n";
-  file += "//app.route('my_other_app');\n";
-  file += "//app.route('my_other_other_app');\n";
-  file += "\n";
-  file += "app.interface('my_app');\n";
-  file += "//app.interface('my_other_app');\n";
-  file += "//app.interface('my_other_other_app');\n";
-  file += "\n";
-  file += "app.listen(8000);\n";
-} else {
-  if (!program.route.length) {
-    program.help ();
-  } else {
-    file = "var emberbase = require('emberbase');\n";
-    file += "\n";
-    file += "var app = new emberbase();\n";
-    file += "\n";
-    program.route.forEach (function (route) {
-      file += "app.route('"+route+"');\n";
-    });
-    file += "\n";
-    if (program.allRoutes) {
-      program.route.forEach (function (route) {
-        file += "app.interface('"+route+"');\n";
-      });
-      file += "\n";
-    } else {
-      if (program.interface.length) {
-        program.interface.forEach (function (route) {
-          file += "app.interface('"+route+"');\n";
-        });
-        file += "\n";
-      }
-    }
-    file += "app.listen("+(program.port||8000)+");\n";
-  }
-}
-
-if (file) {
-  var exists = fs.existsSync ('./emberbase_server.js');
-  if (exists) {
-    var property = {
-      name: 'overwrite',
-      message: 'The file \x1B[36memberbase_server.js\x1B[39m already exists. Overwrite ?[y/n]',
-    };
-    prompt.get (property, function (err, result) {
-      if (result.overwrite === 'y') {
-        fs.writeFileSync ('emberbase_server.js', file);
-        console.log ('File\x1B[36m emberbase_server.js\x1B[39m written.');
-      } else {
-        console.log ('\x1B[31mAborting, no file has been written.\x1B[39m');
-      }
-    });
-  } else {
-    fs.writeFileSync ('emberbase_server.js', file);
-    console.log ('File\x1B[36m emberbase_server.js\x1B[39m written.');
-  }
-}
-
+server.listen (conf.port, function () {
+  console.log ('Server listening on port '+conf.port);
+});

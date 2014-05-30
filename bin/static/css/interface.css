@@ -2,29 +2,47 @@
   padding-left: 0px;
   margin-left: 0px;
 }
+
 .tree-branch {
   background-repeat: repeat-y;
   vertical-align: bottom;
   list-style-type: none;
 }
+
 .tree-leaf {
   vertical-align: bottom;
   list-style-type: none;
   padding-left: 0px;
   margin-left: 0px;
 }
+
 .tree-key {
   color: grey;
   display: inline-block;
   vertical-align: bottom;
 }
+
 .tree-value {
   display: inline-block;
   vertical-align: bottom;
 }
+
 #main {
   padding-left: 30px;
 }
-body {
-  padding-top: 70px;
+
+#add-route-form {
+  display: none;
+}
+
+.align-center {
+  text-align:center;
+}
+
+#signin-div {
+  margin-top: 150px;
+}
+
+#add-route-error {
+  display: none;
 }

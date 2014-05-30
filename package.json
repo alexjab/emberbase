@@ -13,7 +13,9 @@
     "leveldown": "~0.10.2",
     "ejs": "~1.0.0",
     "commander": "~2.2.0",
-    "prompt": "~0.2.12"
+    "prompt": "~0.2.12",
+    "body-parser": "~1.2.2",
+    "cookie-parser": "~1.1.0"
   },
   "devDependencies": {
     "gulp": "~3.6.1",

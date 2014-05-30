@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Emberbase &ndash; Home</title>
+    <link rel="icon" type="image/png" href="/static/img/logo_small.png" />
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/interface.css">
+  </head>
+  <body>
+    <div class="container" style="height:60px;">
+      <div class="col-lg-3">
+        <h3>Emberbase <img src="/static/img/logo_medium.png" alt="logo"/></h3>
+      </div>
+      <div class="col-lg-1">
+        <div style="margin-top:30px">
+          <a href="/" style="color:#666"><span class="glyphicon glyphicon-home"></span> home</a>
+        </div>
+      </div>
+      <div class="col-lg-offset-7 col-lg-1">
+        <div style="margin-top:30px">
+          <a href="/signout" style="color:#666"><span class="glyphicon glyphicon-remove-circle"></span> signout</a>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3">
+          <h4>Admin info</h4>
+          <ul class="list-group">
+              <% if (conf.username !== 'admin') { %>
+                <li class="list-group-item list-group-item-success">Username: <%= conf.username %></li>
+              <% } else { %>
+                <li class="list-group-item list-group-item-danger">Username: admin</li>
+              <% } %>
+              <% if (conf.password !== 'admin') { %>
+                <li class="list-group-item list-group-item-success">Password: ****</li>
+              <% } else { %>
+                <li class="list-group-item list-group-item-danger">Password: ****</li>
+              <% } %>
+          </ul>
+        </div>
+        <div class="col-lg-3">
+          <h4>Server info</h4>
+          <ul class="list-group">
+              <% if (serverStatus === 'ready') { %>
+                <li class="list-group-item list-group-item-success">Server status: ready</li>
+              <% } else if (serverStatus === 'loading') { %>
+                <li class="list-group-item list-group-item-warning">Server status: loading data</li>
+              <% } else { %>
+                <li class="list-group-item list-group-item-danger">Server status: an error happened</li>
+              <% } %>
+          </ul>
+        </div>
+      </div>
+      <h4>Routes</h4>
+      <div class="panel panel-default">
+      <% if (!routes.length) { %>
+        <div class="panel-body">
+          There is currently no route enabled. <a id="add-route" href="#">Click here to add a route to your database.</a>
+        </div>
+      <% } else { %>
+        <div class="panel-body">
+          <table class="table">
+            <thead>
+              <tr><th>Name</th><th>#Clients</th><th>Size (approx.)</th></tr>
+            </thead>
+            <tbody>
+              <% routes.forEach (function (route) { %>
+                <tr><td> <a href="/<%= route %>"><%= route %></a></td><td><%= clients[route] %></td><td><%= sizes[route] %>B</td></tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <ul class="list-group">
+          <li class="list-group-item"><a id="add-route" href="#">Click here to add a route to your database.</a></li>
+        </ul>
+      <% } %>
+        <div id="add-route-form" class="panel-footer">
+          <div class="row">
+            <label for="add-route-input" class="col-lg-2 control-label">Route name</label>
+            <div class="col-lg-4">
+              <input type="text" class="form-control" placeholder="route" id="add-route-input">
+            </div>
+            <div class="col-lg-2">
+              <button type="button" class="btn btn-default" id="add-route-btn">Add route</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <small>Example: app</small>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="alert alert-danger" id="add-route-error"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script src="/emberbase.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+      $ ('#add-route').on ('click', function () {
+        $ ('#add-route-form').show ();
+      });
+
+      $ ('#add-route-input').on ('keydown', function (event) {
+        if (event.keyCode === 13)
+          sendAddRoute ($ ('#add-route-input').val ());
+      });
+      $ ('#add-route-btn').on ('click', function () {
+        sendAddRoute ($ ('#add-route-input').val ());
+      });
+      var sendAddRoute = function (route) {
+        $.ajax ({
+          url: '/api/addRoute',
+          method: 'POST',
+          data: {route: route},
+          dataType: 'json',
+          success: function (data) {
+            if (!data.error) {
+              window.location = '/';
+            } else {
+              if (data.error.code === 401) {
+                $ ('#add-route-error').html ('A error happened: either the user is not authenticated or your session has expired. Please reload this page.');
+              }
+              $ ('#add-route-error').show ();
+            }
+          },
+          error: function () {
+            if (data.error.code === 401) {
+              $ ('#add-route-error').html ('A error happened: either the user is not authenticated or your session has expired. Please reload this page.');
+            }
+            $ ('#add-route-error').show ();
+          }
+        });
+      };
+    </script>
+  </body>
+</html>
