@@ -1,5 +1,17 @@
 #!/usr/bin/env node
 
+// Help
+var program = require ('commander');
+
+program
+.version ('0.5.0')
+.option('-p, --port <number>', 'A port number (default 8000)', parseInt)
+.option('-u, --username <string>', 'A username for the admin interface (default admin)')
+.option('-v, --password <string>', 'A password for the admin interface (default admin)')
+.option('-s, --save', 'Save your settings to the configuration file (default is no)')
+.parse (process.argv);
+
+// Server
 var http = require ('http');
 var fs = require ('fs');
 
@@ -8,28 +20,41 @@ var bodyParser = require ('body-parser');
 var cookieParser = require ('cookie-parser');
 var session = require ('cookie-session');
 
-var Emberbase = require ('../lib/application');
+var Emberbase = require ('./lib.js');
 var routes = require ('./routes.js');
 
 var conf = {};
-try {
-  conf = fs.readFileSync ('./emberbase_conf.json');
-  conf = JSON.parse (conf);
+
+if (program.username || program.port || program.port) {
   conf = {
-    username: conf.username||'admin',
-    password: conf.password||'admin',
-    port: conf.port||8000
+    username: program.username||'admin',
+    password: program.password||'admin',
+    port: program.port||8000
   };
-} catch (e) {
-  console.log ('No configuration file found, creating emberbase_conf.json');
-  conf = {
-    username: 'admin',
-    password: 'admin',
-    port: 8000
-  };
-} finally {
-  fs.writeFileSync ('./emberbase_conf.json', JSON.stringify (conf, null, 2));
-  console.log ('Configuration loaded');
+  if (!program.save) {
+    console.log ('Configuration from the command line. If you wish to save it, launch Emberbase with the flag --save');
+  } else {
+    fs.writeFileSync ('./emberbase_conf.json', JSON.stringify (conf, null, 2));
+  }
+} else {
+  try {
+    var conf = JSON.parse (fs.readFileSync ('./emberbase_conf.json'));
+    conf = {
+      username: conf.username||'admin',
+      password: conf.password||'admin',
+      port: conf.port||8000
+    };
+  } catch (e) {
+    console.log ('No configuration file found, creating emberbase_conf.json');
+    conf = {
+      username: 'admin',
+      password: 'admin',
+      port: 8000
+    };
+  } finally {
+    fs.writeFileSync ('./emberbase_conf.json', JSON.stringify (conf, null, 2));
+    console.log ('Configuration loaded');
+  }
 }
 
 var app = new express ();
