@@ -22,6 +22,9 @@ To start an Emberbase server, just do:
 emberbase
 ```
 
+Emberbase creates a configuration file named `emberbase_conf.json`. It contains the username and password for the administration page as well as the port number of the server. The default username/password/port is `admin`/`admin`/`8000`.
+
+The server provides a web interface to manage the database routes, you can access it at `http://host:port` (usually http://localhost:8000).
 If you need help with the server, write:
 ```
 emberbase --help
@@ -37,7 +40,7 @@ The Emberbase client is a browser javascript library. It is bundled with the ser
 ####Emberbase
 `new Emberbase (url [String][Mandatory]) [Mandatory]`
 
-Construct the Emberbase client object with the URL of your application as parameter. The URL must the form of `http://host:port/<route>`, where `route` is a route you created with your server (see example above).
+Construct the Emberbase client object with the URL of your application as parameter. The URL must the form of `http://host:port/<route>`, where `route` is a route you created from the interface.
 
 ####Emberbase.set
 `Emberbase.set (data [JSON][Mandatory])`

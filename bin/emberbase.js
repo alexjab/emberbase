@@ -92,4 +92,5 @@ app.get ('/:route', function (req, res) {
 
 server.listen (conf.port, function () {
   console.log ('Server listening on port '+conf.port);
+  console.log ('You can administrate this database at http://localhost:'+conf.port);
 });
