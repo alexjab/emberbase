@@ -1,10 +1,10 @@
-![emberbase](http://i.imgur.com/0G5qLcW.png) emberbase
+emberbase ![emberbase](http://i.imgur.com/4XAlISQ.png)
 =========
 [![NPM version](https://badge.fury.io/js/emberbase.svg)](http://badge.fury.io/js/emberbase)
 
 A *cheap* Firebase clone.
 
-Emberbase is a self-hosted Firebase clone. It is currently in an early development stage and unexpected results might happen.
+Emberbase is a self-hosted Firebase clone. It is currently in an early development stage, unexpected results might happen and things might break.
 
 License: MIT
 
@@ -22,10 +22,22 @@ To start an Emberbase server, just do:
 emberbase
 ```
 
-Emberbase creates a configuration file named `emberbase_conf.json`. It contains the username and password for the administration page as well as the port number of the server. The default username/password/port is `admin`/`admin`/`8000`.
+Emberbase creates a configuration file named `emberbase_conf.json`. It contains the username and password for the administration page (`http://localhost:port`) as well as the port number of the server.
+The default username/password/port is `admin`/`admin`/`8000`.
 
-The server provides a web interface to manage the database routes, you can access it at `http://host:port` (usually http://localhost:8000).
-If you need help with the server, write:
+The server gets its configuration from the aforementioned config file, but you can override its values with the folowing options:
+
+  - `-p, --port`: a port number (default is `8000`),
+  - `-u, --username`: a username for the admin interface (default is `admin`),
+  - `-v, --password`: a password for the admin interface (default is `admin`),
+
+And you can save those values to the configuration file by adding the `-s, --save` flag.
+
+The order in which settings are applied is the following:
+
+`command line options` > `configuration file` > `admin/admin/8000`.
+
+If you need this help from the command line, write:
 ```
 emberbase --help
 ```
@@ -71,6 +83,10 @@ This event is fired when data is appended to a list using the `push` command. It
 
 ###Testing
 Tests are on their way.
+
+###Misc.
+Emberbase is built with [socket.io](https://github.com/Automattic/socket.io) and [express](https://github.com/visionmedia/express).
+You should also check out [nvm](https://github.com/creationix/nvm), which provides a great virtual environment for node.
 
 ### License
 MIT

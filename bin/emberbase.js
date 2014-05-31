@@ -5,10 +5,10 @@ var program = require ('commander');
 
 program
 .version ('0.5.0')
-.option('-p, --port <number>', 'A port number (default 8000)', parseInt)
-.option('-u, --username <string>', 'A username for the admin interface (default admin)')
-.option('-v, --password <string>', 'A password for the admin interface (default admin)')
-.option('-s, --save', 'Save your settings to the configuration file (default is no)')
+.option('-p, --port <number>', 'a port number (default is 8000)', parseInt)
+.option('-u, --username <string>', 'a username for the admin interface (default is admin)')
+.option('-v, --password <string>', 'a password for the admin interface (default is admin)')
+.option('-s, --save', 'save your settings to the configuration file (default behavior does nothing)')
 .parse (process.argv);
 
 // Server
@@ -25,36 +25,35 @@ var routes = require ('./routes.js');
 
 var conf = {};
 
-if (program.username || program.port || program.port) {
+try {
+  var conf = JSON.parse (fs.readFileSync ('./emberbase_conf.json'));
   conf = {
-    username: program.username||'admin',
-    password: program.password||'admin',
-    port: program.port||8000
+    username: conf.username||'admin',
+    password: conf.password||'admin',
+    port: conf.port||8000
   };
-  if (!program.save) {
-    console.log ('Configuration from the command line. If you wish to save it, launch Emberbase with the flag --save');
-  } else {
-    fs.writeFileSync ('./emberbase_conf.json', JSON.stringify (conf, null, 2));
-  }
-} else {
-  try {
-    var conf = JSON.parse (fs.readFileSync ('./emberbase_conf.json'));
+} catch (e) {
+  console.log ('No configuration file found, creating emberbase_conf.json');
+  conf = {
+    username: 'admin',
+    password: 'admin',
+    port: 8000
+  };
+  fs.writeFileSync ('./emberbase_conf.json', JSON.stringify (conf, null, 2));
+} finally {
+  if (program.username || program.port || program.port) {
     conf = {
-      username: conf.username||'admin',
-      password: conf.password||'admin',
-      port: conf.port||8000
+      username: program.username||conf.username,
+      password: program.password||conf.password,
+      port: program.port||conf.port
     };
-  } catch (e) {
-    console.log ('No configuration file found, creating emberbase_conf.json');
-    conf = {
-      username: 'admin',
-      password: 'admin',
-      port: 8000
-    };
-  } finally {
-    fs.writeFileSync ('./emberbase_conf.json', JSON.stringify (conf, null, 2));
-    console.log ('Configuration loaded');
+    if (!program.save) {
+      console.log ('Configuration from the command line. If you wish to save it, launch Emberbase with the flag --save');
+    } else {
+      fs.writeFileSync ('./emberbase_conf.json', JSON.stringify (conf, null, 2));
+    }
   }
+  console.log ('Configuration loaded');
 }
 
 var app = new express ();
@@ -92,5 +91,5 @@ app.get ('/:route', function (req, res) {
 
 server.listen (conf.port, function () {
   console.log ('Server listening on port '+conf.port);
-  console.log ('You can administrate this database at http://localhost:'+conf.port);
+  console.log ('You can manage this database at http://localhost:'+conf.port);
 });
