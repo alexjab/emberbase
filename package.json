@@ -1,6 +1,6 @@
 {
   "name": "emberbase",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "A cheap firebase clone",
   "author": "alex@jablon.me",
   "license": "MIT",
@@ -19,13 +19,15 @@
     "gulp": "~3.6.1",
     "gulp-concat": "~2.2.0",
     "gulp-uglify": "~0.2.1",
-    "should": "~3.3.1"
+    "should": "~3.3.1",
+    "thebulk": "0.0.6"
   },
   "bin": {
     "emberbase": "bin/emberbase.js"
   },
   "directories": {
-    "example": "examples"
+    "example": "examples",
+    "test": "test"
   },
   "repository": {
     "type": "git",
@@ -34,5 +36,8 @@
   "bugs": {
     "url": "https://github.com/alexjab/emberbase/issues"
   },
-  "homepage": "https://github.com/alexjab/emberbase"
+  "homepage": "https://github.com/alexjab/emberbase",
+  "scripts": {
+    "test": "make test"
+  }
 }

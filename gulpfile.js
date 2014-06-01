@@ -7,12 +7,6 @@ var paths = {
   scripts: ['bin/client/socket.io.js', 'bin/client/emberbase_client.js']
 };
 
-gulp.task('concat', function() {
-  return gulp.src (paths.scripts)
-  .pipe (concat ('emberbase.js'))
-  .pipe (gulp.dest ('bin/client/dist'));
-});
-
 gulp.task('concat_uglify', function() {
   return gulp.src (paths.scripts)
   .pipe (uglify ())
@@ -20,4 +14,4 @@ gulp.task('concat_uglify', function() {
   .pipe (gulp.dest ('bin/client/dist'));
 });
 
-gulp.task ('default', ['concat', 'concat_uglify']);
+gulp.task ('default', ['concat_uglify']);

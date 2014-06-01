@@ -29,8 +29,8 @@ var Emberbase = function (url, username, password) {
   this._socket.on ('UNKNOWN_ROUTE_ERR', function () {
     throw new Error ('The route '+route+' does not exist on the server');
   });
-  this._socket.on ('NO_ROUTE_ERR', function () {
-    throw new Error ('The client has not joined a route yet. If this is not the first time you are seing this message, please reload the page.');
+  this._socket.on ('JOIN_ROUTE_ERR', function () {
+    throw new Error ('An error happened while trying to join a route. If this is not the first time you are seeing this message, please reload the page.');
   });
   this._socket.on ('AUTH_ACK', function () {
     console.log ('Client authenticated');

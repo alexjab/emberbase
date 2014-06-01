@@ -35,7 +35,7 @@ Emberbase.prototype._onJoinRoute = function (socket, data) {
     socket.set ('route', data.route, function (err) {
       socket.join (data.route);
       if (!err) socket.emit ('JOIN_ROUTE_ACK');
-      else socket.emit ('NO_ROUTE_ERR');
+      else socket.emit ('JOIN_ROUTE_ERR');
       if (data.auth) {
         var routeAuth = this._auth[data.route];
         if (!routeAuth) {
@@ -86,7 +86,7 @@ Emberbase.prototype._onSetEvent = function (socket, data) {
         }, this);
       });
     } else {
-      socket.emit ('NO_ROUTE_ERR');
+      socket.emit ('JOIN_ROUTE_ERR');
     }
   });
 };
@@ -101,7 +101,7 @@ Emberbase.prototype._onPushEvent = function (socket, data) {
         }, this);
       }, this);
     } else {
-      socket.emit ('NO_ROUTE_ERR');
+      socket.emit ('JOIN_ROUTE_ERR');
     }
   }.bind (this));
 }
