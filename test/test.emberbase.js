@@ -3,10 +3,10 @@ var http = require ('http');
 var TheBulk = require ('thebulk');
 var should = require ('should');
 
-var Emberbase = require ('../bin/lib.js');
+var Emberbase = require ('../bin/emberbase.js');
 var thebulk = new TheBulk ();
 
-describe ('bin/lib.js', function () {
+describe ('bin/emberbase.js', function () {
   var server, emberbase, socket;
   before (function () {
     server = http.createServer ();
@@ -34,6 +34,7 @@ describe ('bin/lib.js', function () {
       emberbase.should.have.property ('io');
       emberbase.should.have.property ('serverStatus');
       emberbase.should.have.property ('routes');
+      emberbase.should.have.property ('_useDB');
       emberbase.should.have.property ('_auth');
       emberbase.should.have.property ('_initData');
       emberbase.should.have.property ('_initSockets');

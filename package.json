@@ -1,6 +1,6 @@
 {
   "name": "emberbase",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "A cheap firebase clone",
   "author": "alex@jablon.me",
   "license": "MIT",
@@ -23,7 +23,7 @@
     "thebulk": "0.0.6"
   },
   "bin": {
-    "emberbase": "bin/emberbase.js"
+    "emberbase": "bin/application.js"
   },
   "directories": {
     "example": "examples",
