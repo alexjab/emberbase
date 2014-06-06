@@ -3,16 +3,14 @@ var socketio = require ('socket.io');
 
 var utils = require ('./utils.js');
 
-var database = process.env.NODE_ENV==='test'?'./test_emberbase_data':'./emberbase_data';
-
-var Emberbase = function (server) {
-  this.io = socketio.listen (server);
+var Emberbase = function (config) {
+  this.io = socketio.listen (config.server);
   this.io.set ('log level', 1);
 
   this.serverStatus = 'loading';
   this.routes = [];
   this._auth = {};
-  this._initData ();
+  this._initData (config.database||'./emberbase_data');
   this._initSockets ();
 
   return this;
@@ -21,6 +19,10 @@ var Emberbase = function (server) {
 Emberbase.prototype.addRoute = function (route, auth) {
   if (this.routes.indexOf (route) === -1) {
     this.routes.push (route);
+    if (!(route in this._data)) {
+      this._data[route] = {};
+      this.__data[route] = {};
+    }
     if (auth) {
       this._auth[route] = {user: auth.user, pass: auth.pass};
     }
@@ -88,7 +90,7 @@ Emberbase.prototype._onSetEvent = function (socket, data) {
     } else {
       socket.emit ('JOIN_ROUTE_ERR');
     }
-  });
+  }.bind (this));
 };
 
 Emberbase.prototype._onPushEvent = function (socket, data) {
@@ -134,7 +136,7 @@ Emberbase.prototype._initSockets = function () {
   return this;
 };
 
-Emberbase.prototype._initData = function () {
+Emberbase.prototype._initData = function (database) {
   this._db = levelup (database, {keyEncoding: 'json', valueEncoding: 'json'});
   this._dbWriteStream = this._db.createWriteStream ();
   this._dbWriteStream.on ('error', function (err) {
@@ -143,8 +145,6 @@ Emberbase.prototype._initData = function () {
   });
   this._data = {};
   this.__data = {};
-  var first = null;
-  var last = null;
   this._db.createReadStream ()
   .on ('data', function (data) {
     if (first === null) first = data.key;
@@ -273,4 +273,5 @@ Emberbase.prototype.getDataSize = function () {
   });
   return sizes;
 };
+
 module.exports = Emberbase;

@@ -58,7 +58,7 @@ try {
 
 var app = new express ();
 var server = http.createServer (app);
-var emberbase = new Emberbase (server);
+var emberbase = new Emberbase ({server: server, database: './emberbase_data'});
 
 app.use (bodyParser ());
 app.use (cookieParser ());
