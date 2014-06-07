@@ -12,21 +12,39 @@ var flattenObject = exports.flattenObject = function (object, init_key, iterator
   flatten (init_key?'.'+init_key:'', object);
 };
 
-var inflateObject = exports.inflateObject = function (object, key, value) {
-  key = key.replace ('.', '');
-  var inflate = function (object, long_key, value) {
-    var key = long_key[0];
-    long_key.shift ();
-    if (long_key.length === 0) {
-      object[key] = value;
-    } else {
-      if (!object[key]) {
-        object[key] = {};
+var mergeObjects = exports.mergeObjects = function (host, guest) {
+  var merge = function (host, guest) {
+    Object.keys (guest).forEach (function (key) {
+      var val = guest[key];
+      if (typeof val !== 'object') {
+        host[key] = val;
+      } else {
+        merge (host[key] = {}, val);
       }
-      inflate (object[key], long_key, value);
+    });
+  }
+  merge (host, guest);
+  return host;
+};
+
+var inflateObject = exports.inflateObject = function (flatObject) {
+  var inflate = function (object, longKey, value) {
+    var key = longKey.shift ();
+    if (longKey.length === 0) {
+      if (typeof value !== 'object') {
+        object[key] = value;
+      } else {
+        object[key] = mergeObjects ({}, value);
+      }
+    } else {
+      inflate (object[key] = {}, longKey, value);
     }
   };
-  inflate (object, key.split ('.'), value);
+
+  var object = {};
+  Object.keys (flatObject).forEach (function (key) {
+    inflate (object, key.replace ('.', '').split ('.'), flatObject[key]);
+  });
   return object;
 };
 
