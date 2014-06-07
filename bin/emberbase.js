@@ -157,20 +157,20 @@ Emberbase.prototype._initData = function (database) {
       if (this.routes.indexOf (route) === -1) {
         this.routes.push (route);
       }
-      if (data.key.key !== '.') {
-        if (!this._data[data.key.route]) {
-          this._data[data.key.route] = {};
-        }
-        utils.inflateObject (this._data[data.key.route], data.key.key, data.value);
-        if (!this.__data[data.key.route]) {
-          this.__data[data.key.route] = {};
-        }
-        this.__data[data.key.route][data.key.key] = data.value;
-      } else {
-        this._data[data.key.route] = data.value;
+      if (!this.__data[data.key.route]) {
+        this.__data[data.key.route] = {};
       }
+      this.__data[data.key.route][data.key.key] = data.value;
     }.bind (this))
     .on ('end', function () {
+      Object.keys (this.__data).forEach (function (route) {
+        if (this.__data[route]['.']) {
+          this._data[route] = this.__data[route]['.'];
+        } else {
+          this._data[route] = utils.inflateObject (this.__data[route]);
+        }
+      }, this);
+
       console.log ('Data loaded from the database');
       this.serverStatus = 'ready';
     }.bind (this))
@@ -217,7 +217,7 @@ Emberbase.prototype._pushData = function (route, data, callback, context) {
 };
 
 Emberbase.prototype._setData = function (route, data, callback, context) {
-  if (this.__data[route] && this.useDB) {
+  if (this.__data[route] && this._useDB) {
     Object.keys (this.__data[route]).forEach (function (key) {
       this._dbWriteStream.write ({type: 'del', key: {route: route, key: key}});
     }, this);

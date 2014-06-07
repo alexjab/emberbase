@@ -37,7 +37,9 @@ var inflateObject = exports.inflateObject = function (flatObject) {
         object[key] = mergeObjects ({}, value);
       }
     } else {
-      inflate (object[key] = {}, longKey, value);
+      if (!object[key])
+        object[key] = {};
+      inflate (object[key], longKey, value);
     }
   };
 
