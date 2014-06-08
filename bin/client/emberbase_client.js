@@ -41,13 +41,21 @@ var Emberbase = function (url, username, password) {
   return this;
 };
 
-Emberbase.prototype.set = function (data) {
-  this._socket.emit ('set_event', data);
+Emberbase.prototype.set = function (path, data) {
+  if (!data) {
+    this._socket.emit ('set_event', {data: path});
+  } else {
+    this._socket.emit ('set_event', {path: path, data: data});
+  }
   return this;
 };
 
-Emberbase.prototype.push = function (data) {
-  this._socket.emit ('push_event', data);
+Emberbase.prototype.push = function (path, data) {
+  if (!data) {
+    this._socket.emit ('push_event', {data: path});
+  } else {
+    this._socket.emit ('push_event', {path: path, data: data});
+  }
   return this;
 };
 

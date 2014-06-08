@@ -74,6 +74,7 @@ describe ('bin/utils.js', function () {
     it ('should form a real object from a flattened one', function (done) {
       var object = {
         '.from.the.dusty': 'mesa',
+        '.from.the.windy': 'mesa',
         '.her.looming.shadow': 'grows',
         '.hidden': {
           'in': {
