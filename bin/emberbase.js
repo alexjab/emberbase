@@ -153,32 +153,24 @@ Emberbase.prototype._initData = function (database) {
 
     db.createReadStream ()
     .on ('data', function (data) {
-    console.log (data);
-      var route = data.key.split ('/')[0];
-      var key = data.key.substr (route.length+1);
+      var key = data.key.split ('/');
+      var route = key.shift ();
+      key = key.join ('/');
       if (!this.__data[route]) {
         this.__data[route] = {};
       }
-      if (key) {
-        this.__data[route][key] = data.value;
-      } else {
-        this.__data[route] = data.value;
+      if (!this._data[route]) {
+        this._data[route] = {};
       }
       if (this.routes.indexOf (route) === -1) {
         this.routes.push (route);
       }
+      this.__data[route][key] = data.value;
     }.bind (this))
     .on ('end', function () {
       Object.keys (this.__data).forEach (function (route) {
-        if (!this._data[route]) {
-          this._data[route] = {};
-        }
-        if (typeof this.__data[route] === 'object') {
-          utils.insertFlatDataSync (this._data[route], this.__data[route]);
-        } else {
-          this._data[route] = this.__data[route];
-        }
-      }, this);
+        utils.inflateObject (this._data, this.__data, route);
+      }.bind (this));
       console.log ('Data loaded from the database');
       this.serverStatus = 'ready';
     }.bind (this))
@@ -195,32 +187,16 @@ Emberbase.prototype._pushData = function (route, commit, callback, context) {
   var path = commit.path;
   var id = utils.generateId (new Date ().getTime ());
 
-  if (this._useDB && !typeof this._data[route] !== 'object') {
-    this._dbWriteStream.write ({type: 'del', key: route+'/'});
-  }
-
-  var data__;
-  if (typeof data === 'object') {
-    data__ = utils.flattenObjectSync ((path?path+'/':'')+id, data);
-    Object.keys (data__).forEach (function (key) {
-      this.__data[route][key] = data__[key];
-      if (this._useDB) {
-        this._dbWriteStream.write ({key: route+'/'+key, value: data__[key]});
-      }
-    }, this);
-  } else {
-    this.__data[route][(path?path+'/':'')+id] = data;
+  utils.flattenData (this.__data, route, path+'/'+id, data, function (type, key, value) {
     if (this._useDB) {
-      this._dbWriteStream.write ({key: route+'/'+(path?path+'/':'')+id, value: data});
+      if (type === 'del') {
+        this._dbWriteStream.write ({type: 'del', key: key});
+      } else {
+        this._dbWriteStream.write ({key: key, value: value});
+      }
     }
-
-    data__ = {};
-    data__[(path?path+'/':'')+id] = data;
-  }
-  if (typeof this._data[route] !== 'object') {
-    this._data[route] = {};
-  }
-  utils.insertFlatDataSync (this._data[route], data__);
+  }.bind (this));
+  utils.inflateObject (this._data, this.__data, route);
 
   callback.call (context, {key: id, val: data}, {val: this._data[route]});
 
@@ -231,47 +207,17 @@ Emberbase.prototype._setData = function (route, commit, callback, context) {
   var data = commit.data;
   var path = commit.path;
 
-  var fullPath = (path?path:'');
-
-  if (typeof this.__data[route] === 'object') {
-    Object.keys (this.__data[route]).forEach (function (key) {
-      if (fullPath === key.substr (0,fullPath.length)) {
-        if (this._useDB) {
-          this._dbWriteStream.write ({type: 'del', key: route+'/'+key});
-        }
-        delete this.__data[route][key];
-      }
-    }, this);
-  } else {
+  utils.flattenData (this.__data, route, path, data, function (type, key, value) {
     if (this._useDB) {
-      this._dbWriteStream.write ({type: 'del', key: route+'/'+this.__data[route]});
-    }
-    this.__data[route] = {};
-  }
-
-  if (typeof data === 'object') {
-    var data__ = utils.flattenObjectSync (fullPath, data);
-    console.log (fullPath, data__);
-    Object.keys (data__).forEach (function (key) {
-      this.__data[route][key] = data__[key];
-      this._dbWriteStream.write ({key: route+'/'+key, value: data__[key]});
-    }, this);
-    this._data[route] = utils.inflateDataSync (data__);
-  } else {
-    if (path) {
-      this.__data[route][path] = data;
-      if (typeof this._data[route] !== 'object') {
-        this._data[route] = {};
+      if (type === 'del') {
+        this._dbWriteStream.write ({type: 'del', key: key});
+      } else {
+        this._dbWriteStream.write ({key: key, value: value});
       }
-      this._data[route][path] = data;
-      this._dbWriteStream.write ({key: route+'/'+path, value: data});
-    } else {
-      this.__data[route] = data;
-      this._data[route] = data;
-      this._dbWriteStream.write ({key: route+'/', value: data});
     }
-  }
-  
+  }.bind (this));
+  utils.inflateObject (this._data, this.__data, route);
+
   callback.call (context, {val: this._data[route]});
   return this;
 };
