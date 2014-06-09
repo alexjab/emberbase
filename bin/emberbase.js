@@ -187,7 +187,7 @@ Emberbase.prototype._pushData = function (route, commit, callback, context) {
   var path = commit.path;
   var id = utils.generateId (new Date ().getTime ());
 
-  utils.flattenData (this.__data, route, path+'/'+id, data, function (type, key, value) {
+  utils.flattenData (this.__data, route, path?(path+'/'):''+id, data, function (type, key, value) {
     if (this._useDB) {
       if (type === 'del') {
         this._dbWriteStream.write ({type: 'del', key: key});
