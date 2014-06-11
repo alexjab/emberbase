@@ -222,114 +222,47 @@ describe ('bin/emberbase.js', function () {
   });
 
   describe ('_pushData', function () {
-    server = http.createServer ();
-    var emberbase = new Emberbase ({server: server, database: './emberbase_test_data_1'});
-    describe ('(string data)', function () {
-      it ('should push data to the database (object data)', function (done) {
-        var route = thebulk.string ();
-        var key1 = thebulk.string (), key2 = thebulk.string (), key3 = thebulk.string ();
-        var value1 = thebulk.string (), value2 = thebulk.string ();
-        var data = {};
-        data[key1] = value1;
-        data[key2] = {};
-        data[key2][key3] = value2;
-        emberbase._dbWriteStream = {
-          write: function (data) {
-            data.key.route.should.equal (route);
-            data.should.have.property ('key');
-            data.should.have.property ('value');
-            if (data.key.key.indexOf (key1) !== -1)
-              data.value.should.equal (value1);
-            if (data.key.key.indexOf (key2+'.'+key3) !== -1)
-              data.value.should.equal (value2);
-          }
-        };
-        emberbase._pushData (route, data, function (child, value) {
-          child.val.should.equal (data);
-          value.val.should.have.property (child.key);
-          value.val[child.key].should.eql (child.val);
-          done ();
-        }, emberbase);
-      });
-    });
+    it ('should push some data', function (done) {
+      var emberbase = new Emberbase ();
+      var commit = { data: thebulk.obj () };
+      var route = thebulk.obj ();
+      emberbase.addRoute (route);
 
-    describe ('(string data)', function () {
-      it ('should push data to the database (string data)', function (done) {
-        var data = thebulk.string ();
-        var route = thebulk.string ();
-        emberbase._dbWriteStream = {
-          write: function (data_) {
-            data_.key.route.should.equal (route);
-            data_.value.should.equal (data);
-          }
-        };
-        emberbase._pushData (route, data, function (child, value) {
-          child.val.should.equal (data);
-          value.val.should.have.property (child.key, child.val);
-          done ();
-        }, emberbase);
+      emberbase._pushData (route, commit, function (child, value) {
+        child.should.have.property ('key');
+        child.should.have.property ('val');
+        value.should.have.property ('val');
+        child.val.should.eql (commit.data);
+        value.val[child.key].should.eql (commit.data);
+        done ();
       });
     });
   });
 
   describe ('_setData', function () {
-    server = http.createServer ();
-    var emberbase = new Emberbase ({server: server, database: './emberbase_test_data_2'});
-    describe ('(object data)', function () {
-      it ('should set data to the database (object data)', function (done) {
-        var route = thebulk.string ();
-        var key1 = thebulk.string (), key2 = thebulk.string (), key3 = thebulk.string ();
-        var value1 = thebulk.string (), value2 = thebulk.string ();
-        var data = {};
-        data[key1] = value1;
-        data[key2] = {};
-        data[key2][key3] = value2;
-        emberbase._dbWriteStream = {
-          write: function (data) {
-            data.key.route.should.equal (route);
-            data.should.have.property ('key');
-            data.should.have.property ('value');
-            if (data.key.key === '.'+key1)
-              data.value.should.equal (value1);
-            if (data.key.key === '.'+key2+'.'+key3)
-              data.value.should.equal (value2);
-          }
-        };
-        emberbase._setData (route, data, function (value) {
-          value.val.should.equal (data);
-          done ();
-        }, emberbase);
-      });
-    });
+    it ('should set some data', function (done) {
+      var emberbase = new Emberbase ();
+      var commit = { data: thebulk.obj () };
+      var route = thebulk.obj ();
+      emberbase.addRoute (route);
 
-    describe ('(string data)', function () {
-      it ('should set data to the database (string data)', function (done) {
-        var data = thebulk.string ();
-        var route = thebulk.string ();
-        emberbase._dbWriteStream = {
-          write: function (data_) {
-            data_.key.route.should.equal (route);
-            data_.value.should.equal (data);
-          }
-        };
-        emberbase._pushData (route, data, function (value) {
-          value.val.should.equal (data);
-          done ();
-        }, emberbase);
+      emberbase._setData (route, commit, function (value) {
+        value.val.should.eql (commit.data);
+        done ();
       });
     });
   });
 
   describe ('_getChildren', function () {
     it ('should get the children', function (done) {
-      server = http.createServer ();
-      var emberbase = new Emberbase ({server: server, database: './emberbase_test_data_3'});
+      var emberbase = new Emberbase ();
       var route = thebulk.string ();
-      var data = thebulk.object ();
-      emberbase._setData (route, data, function (value_) {
-        value_.val.should.eql (data);
+      var commit = { data: thebulk.obj () };
+      emberbase.addRoute (route);
+      emberbase._pushData (route, commit, function (child, value) {
+        child.val.should.eql (commit.data);
         emberbase._getChildren (route, function (data) {
-          value_.val[data.key].should.eql (data.val);
+          value.val[data.key].should.eql (data.val);
         }, emberbase);
         done ();
       });
@@ -338,16 +271,15 @@ describe ('bin/emberbase.js', function () {
 
   describe ('_getValue', function () {
     it ('should get the value from the data', function (done) {
-      server = http.createServer ();
-      var emberbase = new Emberbase ({server: server, database: './emberbase_test_data_4'});
+      var emberbase = new Emberbase ();
       var route = thebulk.string ();
-      var data = thebulk.object ();
+      var commit = {data: thebulk.object ()};
       emberbase.addRoute (route);
-      emberbase._setData (route, data, function (value_) {
-        emberbase._getValue (route, function (value) {
-          value.should.eql (value_);
-          value.should.have.property ('val', data);
-          value.val.should.eql (data);
+      emberbase._setData (route, commit, function (value) {
+        emberbase._getValue (route, function (data) {
+          value.should.eql (data);
+          value.should.have.property ('val', commit.data);
+          value.val.should.eql (commit.data);
           done ();
         });
       });

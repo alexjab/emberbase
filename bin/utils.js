@@ -30,21 +30,29 @@ var flattenData = exports.flattenData = function (flatObject, route, path, data,
   if (typeof data !== 'object') {
     if (flatObject[route]['/']) {
       delete flatObject[route]['/'];
-      iterator.call (null, 'del', route+'/');
+      if (iterator) {
+        iterator.call (null, 'del', route+'/');
+      }
     } else {
       Object.keys (flatObject[route]).forEach (function (key) {
         if ((path && key.substr (0, path.length) === path) || !path) {
           delete flatObject[route][key];
-          iterator.call (null, 'del', route+'/'+key);
+          if (iterator) {
+            iterator.call (null, 'del', route+'/'+key);
+          }
         }
       });
     }
     if (!path) {
       flatObject[route]['/'] = data;
-      iterator.call (null, 'put', route+'/', data);
+      if (iterator) {
+        iterator.call (null, 'put', route+'/', data);
+      }
     } else {
       flatObject[route][path] = data;
-      iterator.call (null, 'put', route+'/'+path, data);
+      if (iterator) {
+        iterator.call (null, 'put', route+'/'+path, data);
+      }
     }
   } else {
     var flatten = function (path, data) {
@@ -59,17 +67,23 @@ var flattenData = exports.flattenData = function (flatObject, route, path, data,
       } else {
         if (flatObject[route]['/']) {
           delete flatObject[route]['/'];
-          iterator.call (null, 'del', route+'/');
+          if (iterator) {
+            iterator.call (null, 'del', route+'/');
+          }
         } else {
           Object.keys (flatObject[route]).forEach (function (key) {
             if (key.substr (0, path.length) === path) {
               delete flatObject[route][key];
-              iterator.call (null, 'put', route+'/'+key);
+              if (iterator) {
+                iterator.call (null, 'put', route+'/'+key);
+              }
             }
           });
         }
         flatObject[route][path] = data;
-        iterator.call (null, 'put', route+'/'+path, data);
+        if (iterator) {
+          iterator.call (null, 'put', route+'/'+path, data);
+        }
       }
     };
     flatten (path, data);

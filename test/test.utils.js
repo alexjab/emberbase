@@ -5,7 +5,7 @@ var bulk = new thebulk ();
 var utils = require ('../bin/utils.js');
 
 describe ('bin/utils.js', function () {
-  describe ('flattenObject', function () {
+  describe ('flattenData', function () {
     it ('should flatten an object', function (done) {
       var id = bulk.int ();
       var first = bulk.string ();
@@ -17,13 +17,29 @@ describe ('bin/utils.js', function () {
           last: last
         }
       };
-      var expected = {};
-      utils.flattenObject (object, null, function (key, val) {
-        expected[key] = val;
+      var actual = {
+        route: {}
+      };
+      utils.flattenData (actual, 'route', null, object, function (type, key, value) {
+        type.should.equal ('put');
+        if (key === 'route/id') {
+          value.should.equal (id);
+        } else if (key === 'route/name/first') {
+          value.should.equal (first);
+        } else if (key === 'route/name/last') {
+          value.should.equal (last);
+        } else {
+          throw Error ('The key does not match anything expected');
+        }
       });
-      expected.should.have.property ('.id', id);
-      expected.should.have.property ('.name.first', first);
-      expected.should.have.property ('.name.last', last);
+      var expected = {
+        route: {
+          id: id,
+          'name/first': first,
+          'name/last': last
+        }
+      };
+      actual.should.eql (expected);
       done ();
     });
     it ('should flatten an object with an initial key', function (done) {
@@ -41,79 +57,35 @@ describe ('bin/utils.js', function () {
         firstname: first,
         lastname: last
       };
-      var expected = {};
-      var initKey = bulk.string ();
-      utils.flattenObject (object, initKey, function (key, val) {
-        expected[key] = val;
-      });
-      expected.should.have.property ('.'+initKey+'.birth.year', year);
-      expected.should.have.property ('.'+initKey+'.birth.month', month);
-      expected.should.have.property ('.'+initKey+'.birth.date', date);
-      expected.should.have.property ('.'+initKey+'.firstname', first);
-      expected.should.have.property ('.'+initKey+'.lastname', last);
-      done ();
-    });
-    it ('should flatten an object with a context', function (done) {
-      var object = bulk.obj ();
-      this._true = false;
-      this._one = 0;
-      this._defined = undefined;
-      this._z = 'A';
-      var self = {_true: true, _one: 1, _defined: 'abcd', _z: 'z'};
-      utils.flattenObject (object, 'stuff', function (key, val) {
-        this._true.should.be.true;
-        this._one.should.eql (1);
-        this._defined.should.eql ('abcd');
-        this._z.should.eql ('z');
-      }, self);
+      var actual = {
+        route: {}
+      };
+      var longKey = [bulk.string (), bulk.string (), bulk.string ()].join ('/');
+      utils.flattenData (actual, 'route', longKey, object);
+      var expected = {route: {}};
+      expected.route[longKey+'/birth/year'] = year;
+      expected.route[longKey+'/birth/date'] = date;
+      expected.route[longKey+'/birth/month'] = month;
+      expected.route[longKey+'/birth/year'] = year;
+      expected.route[longKey+'/firstname'] = first;
+      expected.route[longKey+'/lastname'] = last;
+
+      actual.should.eql (expected);
       done ();
     });
   });
 
   describe ('inflateObject', function () {
     it ('should form a real object from a flattened one', function (done) {
-      var object = {
-        '.from.the.dusty': 'mesa',
-        '.from.the.windy': 'mesa',
-        '.her.looming.shadow': 'grows',
-        '.hidden': {
-          'in': {
-            'the': 'branches',
-            'of': 'the poison creosote'
-          }
-        }
+      var expected = bulk.obj ();
+      var flatObject = {
+        route: {}
       };
-      var actual = utils.inflateObject (object);
-      actual.should.have.property ('from');
-      actual.from.should.have.property ('the');
-      actual.from.the.should.have.property ('dusty', 'mesa');
-      actual.should.have.property ('her');
-      actual.her.should.have.property ('looming');
-      actual.her.looming.should.have.property ('shadow', 'grows');
-      actual.should.have.property ('hidden');
-      actual.hidden.should.have.property ('in');
-      actual.hidden.in.should.have.property ('the', 'branches');
-      actual.hidden.in.should.have.property ('of', 'the poison creosote');
-      done ();
-    });
-  });
+      utils.flattenData (flatObject, 'route', null, expected);
 
-  describe ('mergeObjects', function () {
-    it ('should merge another object into a first one', function (done) {
-      var foo = bulk.obj ();
-      var bar = bulk.obj ();
-      var baz = bulk.obj ();
-      var object = {
-        foo: foo,
-        bar: bar
-      };
-      var other = {
-        baz: baz
-      };
-      var actual = utils.mergeObjects (object, other);
-      actual.should.have.property ('foo', foo);
-      actual.should.have.property ('bar', bar);
-      actual.should.have.property ('baz', baz);
+      var actual = {};
+      utils.inflateObject (actual, flatObject, 'route');
+      actual.route.should.eql (expected);
       done ();
     });
   });

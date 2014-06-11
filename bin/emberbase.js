@@ -4,8 +4,12 @@ var socketio = require ('socket.io');
 var utils = require ('./utils.js');
 
 var Emberbase = function (config) {
-  this.io = socketio.listen (config.server);
-  this.io.set ('log level', 1);
+  config = config||{};
+  this.io = null;
+  if (config.server) {
+    this.io = socketio.listen (config.server);
+    this.io.set ('log level', 1);
+  }
 
   this.serverStatus = 'loading';
   this.routes = [];
@@ -111,30 +115,32 @@ Emberbase.prototype._onPushEvent = function (socket, data) {
 }
 
 Emberbase.prototype._initSockets = function () {
-  this.io.on ('connection', function (socket) {
-    socket.on ('JOIN_ROUTE_MSG', function (data) {
-      this._onJoinRoute.call (this, socket, data);
+  if (this.io) {
+    this.io.on ('connection', function (socket) {
+      socket.on ('JOIN_ROUTE_MSG', function (data) {
+        this._onJoinRoute.call (this, socket, data);
+      }.bind (this));
+
+      if (this.serverStatus === 'ready') {
+        socket.emit ('SERVER_READY_MSG');
+        socket.on ('CLIENT_VALUE', function () {
+          this._onClientValue.call (this, socket);
+        }.bind (this));
+        socket.on ('CLIENT_CHILD_ADDED', function () {
+          this._onClientChildAdded.call (this, socket);
+        }.bind (this));
+
+        socket.on ('set_event', function (data) {
+          this._onSetEvent.call (this, socket, data);
+        }.bind (this));
+        socket.on ('push_event', function (data) {
+          this._onPushEvent.call (this, socket, data);
+        }.bind (this));
+      } else {
+        socket.emit ('SERVER_NOT_READY_ERR');
+      }
     }.bind (this));
-
-    if (this.serverStatus === 'ready') {
-      socket.emit ('SERVER_READY_MSG');
-      socket.on ('CLIENT_VALUE', function () {
-        this._onClientValue.call (this, socket);
-      }.bind (this));
-      socket.on ('CLIENT_CHILD_ADDED', function () {
-        this._onClientChildAdded.call (this, socket);
-      }.bind (this));
-
-      socket.on ('set_event', function (data) {
-        this._onSetEvent.call (this, socket, data);
-      }.bind (this));
-      socket.on ('push_event', function (data) {
-        this._onPushEvent.call (this, socket, data);
-      }.bind (this));
-    } else {
-      socket.emit ('SERVER_NOT_READY_ERR');
-    }
-  }.bind (this));
+  }
   return this;
 };
 
