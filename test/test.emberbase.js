@@ -3,7 +3,7 @@ var http = require ('http');
 var TheBulk = require ('thebulk');
 var should = require ('should');
 
-var Emberbase = require ('../bin/emberbase.js');
+var Emberbase = require ('../lib/emberbase.js');
 var thebulk = new TheBulk ();
 
 describe ('bin/emberbase.js', function () {

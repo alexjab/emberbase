@@ -20,8 +20,8 @@ var bodyParser = require ('body-parser');
 var cookieParser = require ('cookie-parser');
 var session = require ('cookie-session');
 
-var Emberbase = require ('./emberbase.js');
-var routes = require ('./routes.js');
+var Emberbase = require ('../lib/emberbase.js');
+var routes = require ('../lib/routes.js');
 
 var conf = {};
 

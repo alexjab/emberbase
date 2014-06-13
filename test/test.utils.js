@@ -2,7 +2,7 @@ var should = require ('should');
 var thebulk = require ('thebulk');
 var bulk = new thebulk ();
 
-var utils = require ('../bin/utils.js');
+var utils = require ('../lib/utils.js');
 
 describe ('bin/utils.js', function () {
   describe ('flattenData', function () {
