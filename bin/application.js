@@ -21,7 +21,7 @@ var cookieParser = require ('cookie-parser');
 var session = require ('cookie-session');
 
 var Emberbase = require ('../lib/emberbase.js');
-var routes = require ('../lib/routes.js');
+var routes = require ('./routes.js');
 
 var conf = {};
 
@@ -71,7 +71,7 @@ app.set ('view engine', 'ejs');
 app.set ('views', __dirname + '/static/views');
 app.get ('/emberbase.min.js', routes.clientMin);
 app.get ('/', function (req, res) {
-  routes.index (req, res, emberbase, conf);
+  routes.home (req, res, emberbase, conf);
 });
 app.get ('/signin', function (req, res) {
   routes.signin (req, res, emberbase, conf);

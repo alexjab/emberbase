@@ -4,6 +4,7 @@
     <title>Emberbase &ndash; Signin</title>
     <link rel="icon" type="image/png" href="/static/img/logo_small.png" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootflat.min.css">
     <link rel="stylesheet" href="/static/css/interface.css">
   </head>
   <body>
@@ -15,7 +16,7 @@
             <h2>Emberbase</h2>
             <hr/>
             <% if (error) { %>
-              <div class="alert alert-danger">Invalid username or password</div>
+              <div class="alert alert-danger">Invalid username or password !</div>
             <% } %>
             <form role="form" method="POST">
               <div class="form-group">
@@ -24,7 +25,7 @@
               <div class="form-group">
                 <input type="password" class="form-control" id="signin-password" placeholder="Password" name="ebPassword" value="<%= pass?pass:'' %>"/>
               </div>
-              <button type="submit" class="btn btn-default">Login</button>
+              <button type="submit" class="btn btn-primary">Login</button>
             </form>
           </div>
         </div>

@@ -1,5 +1,5 @@
 var clientMin = exports.clientMin = function (req, res) {
-  res.sendfile (__dirname + '/client/dist/emberbase.min.js');
+  res.sendfile ('./lib/client/dist/emberbase.min.js');
 };
 
 var dashboard = exports.dashboard = function (req, res, emberbase) {
@@ -11,13 +11,13 @@ var dashboard = exports.dashboard = function (req, res, emberbase) {
   };
 };
 
-var index = exports.index = function (req, res, emberbase, conf) {
+var home = exports.home = function (req, res, emberbase, conf) {
   handleSession (req, conf, function () {
     var clients = {};
     emberbase.routes.forEach (function (route) {
       clients[route] = emberbase.io.sockets.clients (route).length;
     });
-    res.render ('index', {routes: emberbase.routes,
+    res.render ('home', {routes: emberbase.routes,
       clients:clients,
       sizes: emberbase.getDataSize (),
       serverStatus: emberbase.serverStatus,

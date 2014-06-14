@@ -46,3 +46,7 @@
 #add-route-error {
   display: none;
 }
+
+body {
+  background-color: #F5F7FA;
+}

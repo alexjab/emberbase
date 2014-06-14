@@ -4,39 +4,46 @@
     <title>Emberbase &ndash; Home</title>
     <link rel="icon" type="image/png" href="/static/img/logo_small.png" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootflat.min.css">
     <link rel="stylesheet" href="/static/css/interface.css">
   </head>
   <body>
-    <div class="container" style="height:60px;">
-      <div class="col-lg-3">
-        <h3>Emberbase <img src="/static/img/logo_medium.png" alt="logo"/></h3>
-      </div>
-      <div class="col-lg-1">
-        <div style="margin-top:30px">
-          <a href="/" style="color:#666"><span class="glyphicon glyphicon-home"></span> home</a>
+    <div style="background-color:white;">
+      <div class="container" style="height:60px;">
+        <div class="row" >
+          <div class="col-lg-3">
+            <h3 style="margin-top: 20px;">Emberbase <img src="/static/img/logo_medium.png" alt="logo"/></h3>
+          </div>
+          <div class="col-lg-1">
+            <div style="margin-top:30px">
+              <a href="/" style="color:#666"><span class="glyphicon glyphicon-home"></span> home</a>
+            </div>
+          </div>
+          <div class="col-lg-offset-7 col-lg-1">
+            <div style="margin-top:30px">
+              <a href="/signout" style="color:#666"><span class="glyphicon glyphicon-remove-circle"></span> signout</a>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-lg-offset-7 col-lg-1">
-        <div style="margin-top:30px">
-          <a href="/signout" style="color:#666"><span class="glyphicon glyphicon-remove-circle"></span> signout</a>
-        </div>
-      </div>
+      <hr/>
     </div>
-    <hr/>
     <div class="container">
       <div class="row">
         <div class="col-lg-3">
           <h4>Admin info</h4>
           <ul class="list-group">
               <% if (conf.username !== 'admin') { %>
-                <li class="list-group-item list-group-item-success">Username: <%= conf.username %></li>
+                <li class="list-group-item">Username: <%= conf.username %> <span class="badge badge-success">&#10003;</span></li>
               <% } else { %>
-                <li class="list-group-item list-group-item-danger">Username: admin</li>
+                <li class="list-group-item">Username: admin <span class="badge badge-danger tooltip-thingy" data-toggle="tooltip" title="You should not use the default username">&#10007;</span></li>
               <% } %>
-              <% if (conf.password !== 'admin') { %>
-                <li class="list-group-item list-group-item-success">Password: ****</li>
+              <% if (conf.password === 'admin') { %>
+                <li class="list-group-item">Password: **** <span class="badge badge-danger tooltip-thingy" data-toggle="tooltip" title="You should not use the default password">&#10007;</span></li>
+              <% } else if (conf.password.length <= 5) { %>
+                <li class="list-group-item">Password: **** <span class="badge badge-warning tooltip-thingy" data-toggle="tooltip" title="You should not use a short password">&#10007;</span></li>
               <% } else { %>
-                <li class="list-group-item list-group-item-danger">Password: ****</li>
+                <li class="list-group-item">Password: **** <span class="badge badge-success">&#10003;</span></li>
               <% } %>
           </ul>
         </div>
@@ -44,11 +51,11 @@
           <h4>Server info</h4>
           <ul class="list-group">
               <% if (serverStatus === 'ready') { %>
-                <li class="list-group-item list-group-item-success">Server status: ready</li>
+                <li class="list-group-item">Server status: ready <span class="badge badge-success">&#10003;</span></li>
               <% } else if (serverStatus === 'loading') { %>
-                <li class="list-group-item list-group-item-warning">Server status: loading data</li>
+                <li class="list-group-item">Server status: loading data <span class="badge badge-warning">&#10007;</span></li>
               <% } else { %>
-                <li class="list-group-item list-group-item-danger">Server status: an error happened</li>
+                <li class="list-group-item">Server status: error <span class="badge badge-danger">&#10007;</span></li>
               <% } %>
           </ul>
         </div>
@@ -100,12 +107,13 @@
       </div>
     </div>
     
-    <script src="/emberbase.min.js"></script>
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script>
+      $ ('.tooltip-thingy').tooltip ({placement: 'bottom'});
       $ ('#add-route').on ('click', function () {
         $ ('#add-route-form').show ();
+        $ ('#add-route-input').focus ();
       });
 
       $ ('#add-route-input').on ('keydown', function (event) {
