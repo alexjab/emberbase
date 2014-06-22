@@ -21,15 +21,21 @@ describe ('bin/utils.js', function () {
         route: {}
       };
       utils.flattenData (actual, 'route', null, object, function (type, key, value) {
-        type.should.equal ('put');
-        if (key === 'route/id') {
-          value.should.equal (id);
-        } else if (key === 'route/name/first') {
-          value.should.equal (first);
-        } else if (key === 'route/name/last') {
-          value.should.equal (last);
+        if (type === 'put') {
+          if (key === 'route/id') {
+            value.should.equal (id);
+          } else if (key === 'route/name/first') {
+            value.should.equal (first);
+          } else if (key === 'route/name/last') {
+            value.should.equal (last);
+          } else {
+            throw Error ('The key does not match anything expected');
+          }
+        } else if (type === 'del') {
+          (value === undefined).should.be.true;
+          (key==='route/name'||key==='route/').should.be.true;
         } else {
-          throw Error ('The key does not match anything expected');
+          throw Error ('The type does not match anything expected');
         }
       });
       var expected = {
