@@ -1,5 +1,7 @@
+var path = require ('path');
+
 var clientMin = exports.clientMin = function (req, res) {
-  res.sendfile ('./lib/client/dist/emberbase.min.js');
+  res.sendfile (path.resolve (__dirname + '/../lib/client/dist/emberbase.min.js'));
 };
 
 var dashboard = exports.dashboard = function (req, res, emberbase) {
