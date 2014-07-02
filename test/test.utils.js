@@ -5,98 +5,111 @@ var bulk = new thebulk ();
 var utils = require ('../lib/utils.js');
 
 describe ('bin/utils.js', function () {
-  describe ('flattenData', function () {
-    it ('should flatten an object', function (done) {
-      var id = bulk.int ();
-      var first = bulk.string ();
-      var last = bulk.string ();
-      var object = {
-        id: id,
-        name: {
-          first: first,
-          last: last
-        }
-      };
-      var actual = {
-        route: {}
-      };
-      utils.flattenData (actual, 'route', null, object, function (type, key, value) {
-        if (type === 'put') {
-          if (key === 'route/id') {
-            value.should.equal (id);
-          } else if (key === 'route/name/first') {
-            value.should.equal (first);
-          } else if (key === 'route/name/last') {
-            value.should.equal (last);
-          } else {
-            throw Error ('The key does not match anything expected');
+
+  describe ('.setReference ()', function () {
+    it ('should set some new data in place of the existing one', function (done) {
+      var route = bulk.string ();
+      var _data = {};
+      _data[route] = {
+        foo: {
+          bar: {
+            baz: 'data'
           }
-        } else if (type === 'del') {
-          (value === undefined).should.be.true;
-          (key==='route/name'||key==='route/').should.be.true;
-        } else {
-          throw Error ('The type does not match anything expected');
         }
+      };
+
+      var data = {
+        foo: {
+          bar: 'baz'
+        }
+      };
+
+      utils.setReference (_data, route, null, data, function (put, del) {
+        put.should.equal (data);
+        del.should.equal (_data[route]);
+        done ();
       });
-      var expected = {
-        route: {
-          id: id,
-          'name/first': first,
-          'name/last': last
+    });
+
+    it ('should insert and merge some new data in the existing one', function (done) {
+      var route = bulk.string ();
+      var oldValue = bulk.string ();
+      var _data = {};
+      _data[route] = {
+        foo: {
+          bar: {
+            baz: oldValue
+          }
         }
       };
-      actual.should.eql (expected);
-      done ();
+
+      var data = bulk.string ();
+
+      utils.setReference (_data, route, 'foo/bar/baz', data, function (put, del) {
+        put.should.equal (data);
+        del.should.equal (oldValue);
+        done ();
+      });
     });
-    it ('should flatten an object with an initial key', function (done) {
-      var year = bulk.int ();
-      var month = bulk.string ();
-      var date = bulk.int ();
-      var first = bulk.string ();
-      var last = bulk.string ();
+  });
+
+  describe ('.flattenObject ()', function () {
+    it ('should flatten an object without an initial path', function (done) {
+      var route = bulk.string ();
       var object = {
-        birth: {
-          year: year,
-          month: month,
-          date: date
-        },
-        firstname: first,
-        lastname: last
+        foo: {
+          bar: '',
+          baz: ''
+        }
       };
-      var actual = {
-        route: {}
-      };
-      var longKey = [bulk.string (), bulk.string (), bulk.string ()].join ('/');
-      utils.flattenData (actual, 'route', longKey, object);
-      var expected = {route: {}};
-      expected.route[longKey+'/birth/year'] = year;
-      expected.route[longKey+'/birth/date'] = date;
-      expected.route[longKey+'/birth/month'] = month;
-      expected.route[longKey+'/birth/year'] = year;
-      expected.route[longKey+'/firstname'] = first;
-      expected.route[longKey+'/lastname'] = last;
+      var bar = bulk.string ();
+      var baz = bulk.string ();
+      object.foo.bar = bar;
+      object.foo.baz = baz;
 
-      actual.should.eql (expected);
-      done ();
+      var count = 0;
+      utils.flattenObject (route, null, object, function (op) {
+        (op.key === route+'/foo/bar' || op.key === route+'/foo/baz').should.be.true;
+        if (op.key === route+'/foo/bar')
+          op.value.should.equal (bar);
+        if (op.key === route+'/foo/baz')
+          op.value.should.equal (baz);
+        if (count)
+          done ();
+        count++;
+      });
+    });
+
+    it ('should flatten an object with an initial path', function (done) {
+      var route = bulk.string ();
+      var object = {
+        foo: {
+          bar: '',
+          baz: ''
+        }
+      };
+      var bar = bulk.string ();
+      var baz = bulk.string ();
+      object.foo.bar = bar;
+      object.foo.baz = baz;
+
+      var path = [bulk.string (), bulk.string (), bulk.string ()].join ('/');
+
+      var count = 0;
+      utils.flattenObject (route, path, object, function (op) {
+        (op.key === route+'/'+path+'/foo/bar' || op.key === route+'/'+path+'/foo/baz').should.be.true;
+        if (op.key === route+'/'+path+'/foo/bar')
+          op.value.should.equal (bar);
+        if (op.key === route+'/'+path+'/foo/baz')
+          op.value.should.equal (baz);
+        if (count)
+          done ();
+        count++;
+      });
     });
   });
 
-  describe ('inflateObject', function () {
-    it ('should form a real object from a flattened one', function (done) {
-      var expected = bulk.obj ();
-      var flatObject = {
-        route: {}
-      };
-      utils.flattenData (flatObject, 'route', null, expected);
-
-      var actual = {};
-      utils.inflateObject (actual, flatObject, 'route');
-      actual.route.should.eql (expected);
-      done ();
-    });
-  });
-
-  describe ('generateId', function () {
+  describe ('.generateId ()', function () {
     it ('should generate an id from a integer seed', function (done) {
       var seed = 1234567890;
       utils.generateId (seed).should.equal ('08_VAH');
