@@ -7,7 +7,7 @@ var clientMin = exports.clientMin = function (req, res) {
 var dashboard = exports.dashboard = function (req, res, emberbase) {
   var route = req.params.route;
   if (emberbase.routes.indexOf (route) !== -1) {
-    res.render ('dashboard', {route: route});
+    res.render ('dashboard', {route: route, user: req.session.user});
   } else {
     res.send ('404');
   };
