@@ -4,7 +4,7 @@
 var program = require ('commander');
 
 program
-.version ('0.5.0')
+.version ('0.6.1')
 .option('-p, --port <number>', 'a port number (default is 8000)', parseInt)
 .option('-u, --username <string>', 'a username for the admin interface (default is admin)')
 .option('-v, --password <string>', 'a password for the admin interface (default is admin)')

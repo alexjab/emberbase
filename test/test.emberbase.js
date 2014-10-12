@@ -6,7 +6,7 @@ var should = require ('should');
 var Emberbase = require ('../lib/emberbase.js');
 var thebulk = new TheBulk ();
 
-describe ('bin/emberbase.js', function () {
+describe ('lib/emberbase.js', function () {
   var server, emberbase, socket;
   before (function () {
     server = http.createServer ();
@@ -89,10 +89,10 @@ describe ('bin/emberbase.js', function () {
       };
       socket.join = function (room) {};
       socket.emit = function (msg) {
-        msg.should.equal ('JOIN_ROUTE_ERR');
+        msg.should.equal ('UNKNOWN_ROUTE_ERR');
         done ();
       };
-      var data = {route: route};
+      var data = {_route: route};
       emberbase._onJoinRoute (socket, data);
     });
   });
@@ -101,6 +101,7 @@ describe ('bin/emberbase.js', function () {
     it ('should call the right methods, join the right rooms and emit the right values', function (done) {
       var route = thebulk.string ();
       var data = thebulk.obj ();
+      data._route = route;
       emberbase.addRoute (route);
       socket.get = function (key, callback) {
         key.should.equal ('route');
@@ -113,7 +114,7 @@ describe ('bin/emberbase.js', function () {
         event.should.eql ('value_event');
         done ();
       };
-      emberbase._onClientValue (socket);
+      emberbase._onClientValue (socket, data);
     });
   });
 
@@ -121,11 +122,8 @@ describe ('bin/emberbase.js', function () {
     it ('should call the right methods, join the right rooms and emit the right values', function (done) {
       var route = thebulk.string ();
       var data = thebulk.obj ();
+      data._route = route;
       emberbase.addRoute (route);
-      socket.get = function (key, callback) {
-        key.should.equal ('route');
-        callback (null, route);
-      };
       socket.join = function (room) {
         room.should.equal (route+'/CHILD_ADDED');
       };
@@ -133,7 +131,7 @@ describe ('bin/emberbase.js', function () {
         event.should.eql ('child_added_event');
         done ();
       };
-      emberbase._onClientChildAdded (socket);
+      emberbase._onClientChildAdded (socket, data);
     });
   });
 
@@ -141,6 +139,7 @@ describe ('bin/emberbase.js', function () {
     it ('should call the right methods to set data', function (done) {
       var route = thebulk.string ();
       var data = thebulk.obj ();
+      data._route = route;
       emberbase.io = {
         sockets: {
           in: function (route_) {
@@ -160,6 +159,9 @@ describe ('bin/emberbase.js', function () {
         key.should.equal ('route');
         callback (null, route);
       };
+      socket.emit = function (event) {
+        event.should.not.eql ('UNKNOWN_ROUTE_ERR');
+      };
       emberbase._onSetEvent (socket, data);
     });
   });
@@ -168,6 +170,7 @@ describe ('bin/emberbase.js', function () {
     it ('should call the right methods to push data', function (done) {
       var route = thebulk.string ();
       var data = thebulk.obj ();
+      data._route = route;
       emberbase.io = {
         sockets: {
           in: function (route_) {
@@ -187,6 +190,9 @@ describe ('bin/emberbase.js', function () {
       socket.get = function (key, callback) {
         key.should.equal ('route');
         callback (null, route);
+      };
+      socket.emit = function (event) {
+        event.should.not.eql ('UNKNOWN_ROUTE_ERR');
       };
       emberbase._onSetEvent (socket, data);
     });
@@ -273,7 +279,7 @@ describe ('bin/emberbase.js', function () {
     it ('should get the value from the data', function (done) {
       var emberbase = new Emberbase ();
       var route = thebulk.string ();
-      var commit = {data: thebulk.object ()};
+      var commit = {data: thebulk.object (), path: ''};
       emberbase.addRoute (route);
       emberbase._setData (route, commit, function (value) {
         emberbase._getValue (route, function (data) {

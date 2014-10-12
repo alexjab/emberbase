@@ -7,4 +7,7 @@ test:
 install:
 	npm install mocha -g;
 
-.PHONY: build test install
+clean:
+	rm -rf emberbase_data emberbase_test_data emberbase_conf.json
+
+.PHONY: build test install clean
