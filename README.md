@@ -1,4 +1,4 @@
-emberbase ![emberbase](http://i.imgur.com/4XAlISQ.png)
+(No longer maintained) emberbase ![emberbase](http://i.imgur.com/4XAlISQ.png)
 =========
 [![NPM version](https://badge.fury.io/js/emberbase.svg)](http://badge.fury.io/js/emberbase)
 
